@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NYPD CCRB Complaints by Precinct</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>Where did complaints against NYPD officers come from, and how many were upheld?</h1>
+<p class="subtitle">
+  This map explores which NYC precincts received the most civilian complaints against NYPD officers from 2000 to 2020,
+  who filed them, and how often they were substantiated. Move the year slider, filter by complainant or allegation type,
+  and click a precinct to see its details.
+</p>
+
+<div id="controls">
+  <label>Year: <input type="range" id="year" min="2000" max="2020" step="1" value="2000"> <b id="yearLabel">2000</b></label>
+  <label>Complainant ethnicity: <select id="eth"></select></label>
+  <label>Allegation type (FADO): <select id="fado"></select></label>
+  <span class="toggle">
+    Show:
+    <label><input type="radio" name="metric" value="count" checked> complaint count</label>
+    <label><input type="radio" name="metric" value="rate"> substantiated %</label>
+  </span>
+</div>
+<div id="total"></div>
+
+<div id="layout">
+  <svg id="map" width="640" height="660"></svg>
+  <aside id="panel">
+    <h2 id="panelTitle">Click a precinct</h2>
+    <p id="panelHint">Click any precinct on the map to see who filed complaints there and how often they were substantiated
+      (for the selected year and filters). Click it again or press Esc to clear.</p>
+    <div id="charts"></div>
+  </aside>
+</div>
+<div id="tooltip" class="hidden"></div>
+
+<section id="writeup">
+  <h2>Write-up</h2>
+  <h3>Motivation</h3>
+  <p>In my initial analysis of the data, I figured out that the complaints soared since 2000 and they are mostly from a few precincts such as 75. 
+    I wanted to see if complaints against NYPD officers are spread evenly across the city or stick to a few 
+    neighborhoods, and whether that changed over time. A single static map hides the year-to-year change and also
+    hides who was filing, so I made the map interactive.</p>
+
+  <h3>Design rationale</h3>
+  <ul>
+    <li><b>Encoding.</b> Precincts are areas, so I used a choropleth with a sequential yellow-orange-red palette
+      (light = few, dark = many). Counts are not negative and have no meaningful middle, so a diverging palette
+      didn't fit. Precincts with no complaints are light grey so "zero" doesn't look like "low".</li>
+    <li><b>Fixed color domain.</b> The max of the scale is the largest single-year value over 2000-2020 for the
+      current filters. If I rescaled every year, moving the slider would make every year look equally dark.</li>
+    <li><b>Count vs. rate.</b> Raw counts mostly follow how busy a precinct is, so I added a substantiated % view not to mislead the viewer.
+      (There wasn't any data of total population, so I couldn't visualize directly with % of complaints per precinct)
+      For the rate I hide precincts with fewer than 5 complaints, because 1 out of 1 = 100% is misleading. 
+      The color scale with 5 complaints still can mislead the viewer to exaggerate the proportion of substantiated complaints but much less than without the hiding.</li>
+    <li><b>Interactions.</b> The year slider shows change over time. The ethnicity and allegation
+      filters let you ask questions like "where do Force complaints from Hispanic complainants happen?". Clicking a
+      precinct opens small bar charts (ethnicity, gender, age, outcome) linked to the map, so you can compare one
+      precinct with the city.</li>
+    <li><b>Alternatives I considered.</b> A line chart per precinct (77 lines was unreadable), a bubble map
+      (circles overlapped in small precincts), and normalizing by population (I didn't have clean precinct-level
+      population data, so I left it out instead of guessing).</li>
+    <li><b>Data transformations.</b> The raw file is in the form of csv which is not ideal for visualizing interative map.
+      I converted it to JSON format to make it easier to visualize. The raw file has one row per allegation, so I deduplicated by complaint_id
+      and counted each unique complaint once. I kept complaints received 2000-2020, placed each one in the
+      precinct where the incident happened, and dropped precincts that are not on the map (0, 1000, or missing).
+      Missing/refused ethnicity is grouped as "Unknown". A complaint with several complainants or allegation types
+      counts once in each matching filter, but only once under "All". Substantiated rate is the share of complaints
+      where the CCRB substantiated at least one allegation.</li>
+    <li><b>Data source.</b>
+      <a href="https://projects.propublica.org/datastore/#civilian-complaints-against-new-york-city-police-officers">Civilian Complaints Against New York City Police Officers</a></li>
+  </ul>
+
+  <h3>Development process</h3>
+  <p>I worked on this alone. It took about 10 hours in total. The most time went into the data:
+    figuring out that the CSV has one row per allegation and not per complaint, so my first counts were too high.
+    Turning the CSV to JSON and deduplicating the data also took a while.
+    Getting the precinct GeoJSON to draw correctly in D3 also took a while. </p>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="main.js"></script>
+</body>
+</html>

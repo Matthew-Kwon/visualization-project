@@ -1,0 +1,28 @@
+body { font-family: system-ui, sans-serif; margin: 24px; color: #222; max-width: 1080px; }
+h1 { font-size: 22px; margin: 0 0 6px; }
+h2 { font-size: 17px; margin: 0 0 6px; }
+h3 { font-size: 15px; margin: 14px 0 4px; }
+.subtitle { font-size: 14px; color: #555; margin: 0 0 12px; line-height: 1.45; max-width: 900px; }
+#controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; font-size: 14px; margin-bottom: 6px; }
+.toggle label { margin-left: 6px; }
+#total { font-size: 13px; color: #444; margin-bottom: 4px; }
+
+/* map + side panel next to each other */
+#layout { display: flex; gap: 16px; align-items: flex-start; }
+#panel { width: 380px; font-size: 13px; }
+#panelHint { color: #666; }
+.precinct { stroke: #fff; stroke-width: .5; cursor: pointer; }
+.precinct:hover { stroke: #000; stroke-width: 1.5; }
+.precinct.selected { stroke: #1f4fff; stroke-width: 3; }
+.legend text { font-size: 11px; }
+
+/* small bar charts */
+.chart-title { font-weight: 600; margin: 10px 0 2px; }
+.bar { fill: #e6550d; }
+.bar-city { fill: none; stroke: #333; stroke-width: 1.5; }
+.chart text { font-size: 11px; }
+
+#tooltip { position: absolute; background: rgba(255,255,255,.95); border: 1px solid #999; padding: 6px 8px;
+  font-size: 12px; pointer-events: none; border-radius: 4px; }
+.hidden { display: none; }
+#writeup { max-width: 780px; font-size: 14px; line-height: 1.5; margin-top: 24px; border-top: 1px solid #ddd; }
